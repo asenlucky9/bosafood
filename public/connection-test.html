@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Connection Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; max-width: 800px; margin: 0 auto; padding: 20px; }
+        .error { color: red; background: #ffe6e6; padding: 10px; border-radius: 4px; }
+        .success { color: green; background: #e6ffe6; padding: 10px; border-radius: 4px; }
+        button { margin: 5px; padding: 8px 16px; border-radius: 4px; border: 1px solid #ddd; cursor: pointer; }
+        button:hover { background: #f0f0f0; }
+        #results { margin-top: 20px; }
+        .test-group { margin-bottom: 20px; border: 1px solid #ddd; padding: 15px; border-radius: 4px; }
+        h2 { margin-top: 0; color: #333; }
+        pre { white-space: pre-wrap; word-wrap: break-word; }
+        .test-input { margin: 10px 0; }
+        input { padding: 5px; margin-right: 5px; }
+    </style>
+</head>
+<body>
+    <h1>Bosa Food API Connection Test</h1>
+    
+    <div class="test-group">
+        <h2>Public Endpoints</h2>
+        <button onclick="testMenuItems()">Test Menu Items</button>
+        <button onclick="testCategories()">Test Categories</button>
+        <button onclick="testSpecialOffers()">Test Special Offers</button>
+    </div>
+
+    <div class="test-group">
+        <h2>Authentication</h2>
+        <div class="test-input">
+            <input type="email" id="email" placeholder="Email" value="test@example.com">
+            <input type="password" id="password" placeholder="Password" value="password123">
+            <button onclick="testLogin()">Test Login</button>
+        </div>
+        <button onclick="testLogout()">Test Logout</button>
+    </div>
+
+    <div class="test-group">
+        <h2>Protected Endpoints</h2>
+        <button onclick="testGetCart()">Test Get Cart</button>
+        <button onclick="testGetOrders()">Test Get Orders</button>
+        <button onclick="testUserProfile()">Test User Profile</button>
+    </div>
+
+    <div id="results"></div>
+
+    <script type="module">
+        import apiService from '../src/services/api.service.js';
+        import authService from '../src/services/auth.service.js';
+
+        // Make services available globally
+        window.apiService = apiService;
+        window.authService = authService;
+
+        // Public endpoint tests
+        window.testMenuItems = async () => {
+            try {
+                const response = await apiService.getMenuItems();
+                showResult('Menu Items Test', response);
+            } catch (error) {
+                showError('Menu Items Test', error);
+            }
+        };
+
+        window.testCategories = async () => {
+            try {
+                const response = await apiService.getCategories();
+                showResult('Categories Test', response);
+            } catch (error) {
+                showError('Categories Test', error);
+            }
+        };
+
+        window.testSpecialOffers = async () => {
+            try {
+                const response = await apiService.getCurrentOffers();
+                showResult('Special Offers Test', response);
+            } catch (error) {
+                showError('Special Offers Test', error);
+            }
+        };
+
+        // Authentication tests
+        window.testLogin = async () => {
+            try {
+                const email = document.getElementById('email').value;
+                const password = document.getElementById('password').value;
+                const success = await authService.login(email, password);
+                showResult('Login Test', { success, token: authService.getToken() });
+            } catch (error) {
+                showError('Login Test', error);
+            }
+        };
+
+        window.testLogout = () => {
+            try {
+                authService.logout();
+                showResult('Logout Test', { success: true, message: 'Logged out successfully' });
+            } catch (error) {
+                showError('Logout Test', error);
+            }
+        };
+
+        // Protected endpoint tests
+        window.testGetCart = async () => {
+            try {
+                const response = await apiService.getCart();
+                showResult('Get Cart Test', response);
+            } catch (error) {
+                showError('Get Cart Test', error);
+            }
+        };
+
+        window.testGetOrders = async () => {
+            try {
+                const response = await apiService.getOrders();
+                showResult('Get Orders Test', response);
+            } catch (error) {
+                showError('Get Orders Test', error);
+            }
+        };
+
+        window.testUserProfile = async () => {
+            try {
+                const response = await apiService.getUserProfile();
+                showResult('User Profile Test', response);
+            } catch (error) {
+                showError('User Profile Test', error);
+            }
+        };
+
+        // Helper functions
+        function showResult(title, response) {
+            const resultsDiv = document.getElementById('results');
+            const timestamp = new Date().toLocaleTimeString();
+            resultsDiv.innerHTML = `
+                <div>
+                    <h3>${title} (${timestamp})</h3>
+                    <pre class="success">${JSON.stringify(response, null, 2)}</pre>
+                </div>
+            ` + resultsDiv.innerHTML;
+        }
+
+        function showError(title, error) {
+            const resultsDiv = document.getElementById('results');
+            const timestamp = new Date().toLocaleTimeString();
+            resultsDiv.innerHTML = `
+                <div>
+                    <h3>${title} (${timestamp})</h3>
+                    <pre class="error">${error.message}</pre>
+                </div>
+            ` + resultsDiv.innerHTML;
+        }
+
+        // Connection status indicator
+        async function checkConnection() {
+            try {
+                await apiService.getMenuItems();
+                document.body.style.border = '5px solid green';
+            } catch (error) {
+                document.body.style.border = '5px solid red';
+            }
+        }
+
+        // Check connection on load
+        checkConnection();
+    </script>
+</body>
+</html> 

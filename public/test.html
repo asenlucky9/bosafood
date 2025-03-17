@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Test Page</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .error { color: red; }
+        .success { color: green; }
+        button { margin: 5px; padding: 5px 10px; }
+        #results { margin-top: 20px; }
+    </style>
+</head>
+<body>
+    <h1>API Connection Test</h1>
+    
+    <div>
+        <button onclick="testMenuItems()">Test Menu Items</button>
+        <button onclick="testCategories()">Test Categories</button>
+        <button onclick="testSpecialOffers()">Test Special Offers</button>
+    </div>
+
+    <div id="results"></div>
+
+    <script type="module">
+        import apiService from '../src/services/api.service.js';
+        import authService from '../src/services/auth.service.js';
+
+        // Make services available globally
+        window.apiService = apiService;
+        window.authService = authService;
+
+        // Test functions
+        window.testMenuItems = async () => {
+            try {
+                const response = await apiService.getMenuItems();
+                showResult('Menu Items Test', response);
+            } catch (error) {
+                showError('Menu Items Test', error);
+            }
+        };
+
+        window.testCategories = async () => {
+            try {
+                const response = await apiService.getCategories();
+                showResult('Categories Test', response);
+            } catch (error) {
+                showError('Categories Test', error);
+            }
+        };
+
+        window.testSpecialOffers = async () => {
+            try {
+                const response = await apiService.getCurrentOffers();
+                showResult('Special Offers Test', response);
+            } catch (error) {
+                showError('Special Offers Test', error);
+            }
+        };
+
+        // Helper functions
+        function showResult(title, response) {
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML += `
+                <div>
+                    <h3>${title}</h3>
+                    <pre class="success">${JSON.stringify(response, null, 2)}</pre>
+                </div>
+            `;
+        }
+
+        function showError(title, error) {
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML += `
+                <div>
+                    <h3>${title}</h3>
+                    <pre class="error">${error.message}</pre>
+                </div>
+            `;
+        }
+    </script>
+</body>
+</html> 

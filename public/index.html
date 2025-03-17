@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bosa Food</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <div id="root"></div>
+
+    <!-- Load scripts as modules -->
+    <script type="module">
+        import { CONFIG } from '../src/config/config.js';
+        import apiService from '../src/services/api.service.js';
+        import authService from '../src/services/auth.service.js';
+        
+        // Make services available globally if needed
+        window.apiService = apiService;
+        window.authService = authService;
+    </script>
+</body>
+</html> 
